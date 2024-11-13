@@ -1,0 +1,168 @@
+Gabriela Tanaka Hamond 
+Livia Martins 
+Julia Guimarães
+Helena Nazareth
+
+
+import pandas as pd
+
+# Carregar os dados do arquivo de registro
+data = {
+    "cliente": ["João Silva", "Maria Oliveira", "Carlos Pereira", "Ana Souza", "Pedro Lima",
+                "Mariana Costa", "Fernanda Santos", "Ricardo Alves", "Beatriz Ferreira", "Lucas Mendes",
+                "Paula Rodrigues", "Marcos Souza", "Carolina Batista", "Bruna Rocha", "Felipe Duarte",
+                "Mateus Albuquerque", "Eduardo Gomes", "Paula Rodrigues", "Roberto Lima", "Cíntia Carvalho",
+                "Luiz Henrique", "Débora Farias", "Rafael Barbosa", "Silvana Macedo", "Gustavo Menezes",
+                "Paula Rodrigues", "Vinícius Rocha", "Tatiane Borges", "Flávio Matos", "Renata Freitas",
+                "Daniela Nunes", "Hugo Oliveira", "Renato Soares", "Camila Martins", "Fabiana Neves",
+                "Sandro Ribeiro", "Priscila Souza", "Thiago Vasconcelos", "Lorena Medeiros", "André Fernandes",
+                "Nathalia Brito", "José Almeida"],
+    "caso": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24,
+             25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42],  # Completar com números válidos
+    "despesa": [1200, 800, 1500, 600, 1000, 1800, 750, 950, 1400, 900, 500, 2200, 1100, 1600, 700,
+                850, 1700, 950, 2100, 650, 1300, 1000, 1950, 850, 1050, 1200, 550, 1750, 950, 800,
+                1450, 2300, 1100, 1850, 750, 900, 1600, 1150, 1300, 600, 1200, 950],
+    "receita": [3500, 2300, 4200, 2100, 3000, 4700, 2600, 3200, 4000, 2900, 1700, 5100, 3400, 4500, 2500,
+                2700, 4600, 2800, 5200, 2100, 3900, 3100, 4800, 2400, 3100, 3600, 1800, 4300, 3000, 2600,
+                4100, 5400, 3500, 4900, 2600, 2700, 4400, 3200, 3600, 2000, 3700, 3100]
+}
+
+# Verificar se o número de elementos nas listas é o mesmo
+if len(data["cliente"]) == len(data["caso"]) == len(data["despesa"]) == len(data["receita"]):
+    df = pd.DataFrame(data)
+else:
+    raise ValueError("As listas fornecidas para 'cliente', 'caso', 'despesa' e 'receita' devem ter o mesmo comprimento.")
+
+# Menu interativo
+def main_menu():
+    while True:
+        print("\nMenu:")
+        print("1. Buscar clientes por parte do nome")
+        print("2. Buscar casos por nome completo do cliente")
+        print("3. Buscar informações de um caso por número")
+        print("4. Mostrar despesa total")
+        print("5. Mostrar receita total")
+        print("6. Caso com a maior despesa")
+        print("7. Caso com a maior receita")
+        print("8. Gravar informações do cliente em arquivo")
+        print("9. Sair")
+
+        choice = input("Escolha uma opção: ")
+
+        if choice == '1':
+            search_client_by_name()
+        elif choice == '2':
+            search_cases_by_client()
+        elif choice == '3':
+            search_case_by_number()
+        elif choice == '4':
+            show_total_expense()
+        elif choice == '5':
+            show_total_revenue()
+        elif choice == '6':
+            show_case_with_highest_expense()
+        elif choice == '7':
+            show_case_with_highest_revenue()
+        elif choice == '8':
+            save_client_info_to_file()
+        elif choice == '9':
+            break
+        else:
+            print("Opção inválida. Tente novamente.")
+
+# Funções para cada opção do menu
+def search_client_by_name():
+    name_part = input("Digite parte do nome do cliente: ")
+    clients = df[df['cliente'].str.contains(name_part, case=False, na=False)]
+    unique_clients = clients['cliente'].unique()
+    print("Clientes encontrados:")
+    for client in unique_clients:
+        print(client)
+
+def search_cases_by_client():
+    client_name = input("Digite o nome completo do cliente: ")
+    cases = df[df['cliente'] == client_name]['caso'].tolist()
+    print(f"Casos associados a {client_name}: {cases}")
+
+def search_case_by_number():
+    case_number = int(input("Digite o número do caso: "))
+    case_info = df[df['caso'] == case_number]
+    if not case_info.empty:
+        client_name = case_info['cliente'].values[0]
+        expense = case_info['despesa'].values[0]
+        revenue = case_info['receita'].values[0]
+        difference = revenue - expense
+        print(f"Cliente: {client_name}\nDespesa: {expense}\nReceita: {revenue}\nDiferença: {difference}")
+    else:
+        print("Caso não encontrado.")
+
+def show_total_expense():
+    total_expense = df['despesa'].sum()
+    print(f"Despesa total: {total_expense}")
+
+def show_total_revenue():
+    total_revenue = df['receita'].sum()
+    print(f"Receita total: {total_revenue}")
+
+def show_case_with_highest_expense():
+    max_expense_case = df.loc[df['despesa'].idxmax()]
+    client_name = max_expense_case['cliente']
+    case_number = max_expense_case['caso']
+    expense = max_expense_case['despesa']
+    revenue = max_expense_case['receita']
+    print(f"Cliente: {client_name}\nNúmero do caso: {case_number}\nReceita: {revenue}\nDespesa: {expense}")
+
+def show_case_with_highest_revenue():
+    max_revenue_case = df.loc[df['receita'].idxmax()]
+    client_name = max_revenue_case['cliente']
+    case_number = max_revenue_case['caso']
+    expense = max_revenue_case['despesa']
+    revenue = max_revenue_case['receita']
+    print(f"Cliente: {client_name}\nNúmero do caso: {case_number}\nReceita: {revenue}\nDespesa: {expense}")
+
+def save_client_info_to_file():
+    client_name = input("Digite o nome completo do cliente: ")
+    client_info = df[df['cliente'] == client_name]
+    if not client_info.empty:
+        client_info.to_csv(f"{client_name}.csv", index=False)
+        print(f"Informações do cliente {client_name} foram gravadas no arquivo {client_name}.csv")
+    else:
+        print("Cliente não encontrado.")
+
+# Executar o menu
+main_menu()
+
+
+
+
+Menu:
+1. Buscar clientes por parte do nome
+2. Buscar casos por nome completo do cliente
+3. Buscar informações de um caso por número
+4. Mostrar despesa total
+5. Mostrar receita total
+6. Caso com a maior despesa
+7. Caso com a maior receita
+8. Gravar informações do cliente em arquivo
+9. Sair
+Escolha uma opção: 
+1
+Digite parte do nome do cliente: 
+Pedro
+Clientes encontrados:
+Pedro Lima
+
+Menu:
+1. Buscar clientes por parte do nome
+2. Buscar casos por nome completo do cliente
+3. Buscar informações de um caso por número
+4. Mostrar despesa total
+5. Mostrar receita total
+6. Caso com a maior despesa
+7. Caso com a maior receita
+8. Gravar informações do cliente em arquivo
+9. Sair
+Escolha uma opção: 
+
+Session Killed due to Timeout.
+Press Enter to exit terminal
